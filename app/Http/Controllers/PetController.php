@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePetRequest;
 use App\Repositories\PetRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\View\View;
 
 class PetController extends Controller
 {
@@ -15,17 +15,22 @@ class PetController extends Controller
         $this->apiPet = $apiPet;
     }
 
-    public function index(){
+    public function index(): View{
         $data = $this->apiPet->getAll();
+
+
         return view('pets.index', ['pets' => $data]);
     }
 
     public function create(){
-
+        return view('pets.create');
     }
 
-    public function store(Request $request){
-
+    public function store(StorePetRequest $request){
+        $data = $request->validated();
+        $response = $this->apiPet->create($data);
+//        dd($response);
+        return redirect()->route('pets.index');
     }
 
     public function show($id){
