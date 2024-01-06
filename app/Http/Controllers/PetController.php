@@ -37,15 +37,16 @@ class PetController extends Controller
 
     }
 
-    public function edit($id){
+    public function edit($id): View{
 
     }
 
-    public function update(Request $request, $id){
+    public function update(StorePetRequest $request, $id){
 
     }
-    public function destroy($id){
+    public function destroy(int $id){
 
+        $response = $this->apiPet->delete($id);
     }
 
 

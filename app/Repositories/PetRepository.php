@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Http;
 class PetRepository{
 
     public function getAll(): array{
-        $response = Http::get('https://petstore.swagger.io/v2/pet/findByStatus?status=available&status=pending&status=sold');
+//        $response = Http::get('https://petstore.swagger.io/v2/pet/findByStatus?status=available&status=pending&status=sold');
+        $response = Http::get('https://petstore.swagger.io/v2/pet/findByStatus?status=pending');
         return $response->json();
 
     }
@@ -22,6 +23,11 @@ class PetRepository{
 
         $response = Http::post('https://petstore.swagger.io/v2/pet',$data);
         return $response->json();
+    }
+
+    public function delete($id){
+        $response = Http::delete('https://petstore.swagger.io/v2/pet/'.$id);
+        return $response;
     }
 
 }
