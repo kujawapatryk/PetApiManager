@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePetRequest;
 use App\Repositories\PetRepository;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class PetController extends Controller
@@ -17,19 +17,16 @@ class PetController extends Controller
 
     public function index(): View{
         $data = $this->apiPet->getAll();
-
-
         return view('pets.index', ['pets' => $data]);
     }
 
-    public function create(){
+    public function create(): View{
         return view('pets.create');
     }
 
-    public function store(StorePetRequest $request){
+    public function store(StorePetRequest $request): RedirectResponse{
         $data = $request->validated();
-        $response = $this->apiPet->create($data);
-//        dd($response);
+         $this->apiPet->create($data);
         return redirect()->route('pets.index');
     }
 
@@ -42,12 +39,12 @@ class PetController extends Controller
         return view('pets.edit', ['pet' => $pet]);
     }
 
-    public function update(StorePetRequest $request){
+    public function update(StorePetRequest $request): RedirectResponse{
         $data = $request->validated();
         $result = $this->apiPet->update($data);
         return redirect()->route('pets.index');
     }
-    public function destroy(int $id){
+    public function destroy(int $id): RedirectResponse{
 
         $response = $this->apiPet->delete($id);
         return redirect()->route('pets.index');
