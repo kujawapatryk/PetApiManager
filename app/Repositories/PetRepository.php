@@ -13,9 +13,13 @@ class PetRepository{
     {
         $this->apiUrl = env('PETSTORE_API_URL', 'https://petstore.swagger.io/v2/pet/');
     }
-    public function getAll(): array{
-//        $response = Http::get('https://petstore.swagger.io/v2/pet/findByStatus?status=available&status=pending&status=sold');
-        $response = Http::get($this->apiUrl.'findByStatus?status=pending');
+    public function getAll(string $data): array{
+        if ($data === 'all') {
+            $status = 'available,pending,sold';
+        }else {
+            $status = $data;
+        }
+        $response = Http::get($this->apiUrl.'findByStatus?status='.$status);
         return $response->json();
 
     }

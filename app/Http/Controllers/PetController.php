@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PetStatusRequest;
 use App\Http\Requests\StorePetRequest;
 use App\Repositories\PetRepository;
 use Illuminate\Http\RedirectResponse;
@@ -15,8 +16,9 @@ class PetController extends Controller
         $this->apiPet = $apiPet;
     }
 
-    public function index(): View{
-        $data = $this->apiPet->getAll();
+    public function index(PetStatusRequest $request): View{
+        $status = $request->input('status', 'all');
+        $data = $this->apiPet->getAll($status);
         return view('pets.index', ['pets' => $data]);
     }
 
@@ -26,7 +28,7 @@ class PetController extends Controller
 
     public function store(StorePetRequest $request): RedirectResponse{
         $data = $request->validated();
-         $this->apiPet->create($data);
+        $this->apiPet->create($data);
         return redirect()->route('pets.index');
     }
 
