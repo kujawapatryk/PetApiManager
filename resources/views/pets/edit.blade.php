@@ -1,7 +1,7 @@
 @extends('layouts.guest')
 
 @section('content')
-    <form action="{{ route('pets.update'}}" method="POST" class="max-w-lg mx-auto bg-white p-8 shadow-lg rounded">
+    <form action="{{ route('pets.update', $pet['id']) }}" method="POST" class="max-w-lg mx-auto bg-white p-8 shadow-lg rounded">
         @csrf
         @method('PUT')
 
