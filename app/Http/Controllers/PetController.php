@@ -38,15 +38,19 @@ class PetController extends Controller
     }
 
     public function edit($id): View{
-
+        $pet = $this->apiPet->getOne($id);
+        return view('pets.edit', ['pet' => $pet]);
     }
 
-    public function update(StorePetRequest $request, $id){
-
+    public function update(StorePetRequest $request){
+        $data = $request->validated();
+        $result = $this->apiPet->update($data);
+        return redirect()->route('pets.index');
     }
     public function destroy(int $id){
 
         $response = $this->apiPet->delete($id);
+        return redirect()->route('pets.index');
     }
 
 
