@@ -30,4 +30,9 @@ class PetRepository{
         return $response;
     }
 
+    public function update(array $data){
+        $response = Http::put('https://petstore.swagger.io/v2/pet/',$data);
+        return $response->json();
+    }
+
 }
