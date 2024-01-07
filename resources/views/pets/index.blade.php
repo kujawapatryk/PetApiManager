@@ -2,8 +2,12 @@
 
 @section('content')
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-2xl font-bold text-center my-5">Lista Zwierząt</h1>
-
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-center my-5">Lista Zwierząt</h1>
+            <a href="{{ route('pets.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Dodaj nowego zwierzaka
+            </a>
+        </div>
         <form action="{{ route('pets.index') }}" method="GET" class="mb-6">
             <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm" onchange="this.form.submit()">
                 <option value="">Wybierz status</option>
