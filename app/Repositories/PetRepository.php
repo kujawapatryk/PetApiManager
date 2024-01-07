@@ -2,47 +2,106 @@
 
 namespace App\Repositories;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class PetRepository{
 
-    protected $apiUrl;
+    protected string $apiUrl;
 
     public function __construct()
     {
         $this->apiUrl = env('PETSTORE_API_URL', 'https://petstore.swagger.io/v2/pet/');
     }
     public function getAll(string $data): array{
-        if ($data === 'all') {
-            $status = 'available,pending,sold';
-        }else {
-            $status = $data;
+        try {
+            if ($data === 'all') {
+                $status = 'available,pending,sold';
+            }else {
+                $status = $data;
+            }
+            $response = Http::get($this->apiUrl.'findByStatus?status='.$status);
+            return $response->json();
+        }catch (\Exception $e){
+            Log::error("Error during getAll request: " . $e->getMessage());
+            throw new \RuntimeException('Wystąpił błąd podczas pobierania danych.');
         }
-        $response = Http::get($this->apiUrl.'findByStatus?status='.$status);
-        return $response->json();
+    }
+
+    public function getOne($id): array {
+        try {
+            $response = Http::get($this->apiUrl . $id);
+
+            if ($response->successful()) {
+                return $response->json();
+            } else {
+                throw match ($response->status()) {
+                    400 => new \RuntimeException('Podano nieprawidłowe ID.'),
+                    404 => new \RuntimeException('Nie znaleziono zwierzęcia.'),
+                    default => new \RuntimeException('Nieoczekiwany błąd, spróbuj później.'),
+                };
+            }
+        } catch (\Exception $e) {
+            Log::error("Error during getOne request: " . $e->getMessage());
+            throw new \RuntimeException('Błąd podczas pobierania danych.');
+        }
+    }
+
+    public function create(array $data): void{
+        try {
+            $response = Http::post($this->apiUrl,$data);
+            if ($response->successful()) {
+                return;
+            }else {
+                throw match ($response->status()) {
+                    405 => new \RuntimeException('Nieprawidłowe dane wejściowe'),
+                };
+            }
+
+        } catch (\Exception $e) {
+            Log::error("Error during create request: " . $e->getMessage());
+            throw new \RuntimeException('Błąd podczas tworzenia.');
+        }
 
     }
 
-    public function getOne($id): array{
-        $response = Http::get($this->apiUrl.$id);
-        return $response->json();
+    public function delete($id):void{
+        try {
+            $response = Http::delete($this->apiUrl.$id);
+            if ($response->successful()) {
+                return;
+            } else {
+                throw match ($response->status()) {
+                    400 => new \RuntimeException('Podano nieprawidłowe ID.'),
+                    404 => new \RuntimeException('Nie znaleziono zwierzęcia.'),
+                };
+            }
+
+        } catch (\Exception $e) {
+            Log::error("Error during delete request: " . $e->getMessage());
+            throw new \RuntimeException('Błąd podczas usuwania danych.');
+        }
+
     }
 
-    public function create(array $data): array{
+    public function update(array $data):void{
+        try {
+            $response = Http::put($this->apiUrl, $data);
 
-        $response = Http::post($this->apiUrl,$data);
-        return $response->json();
-    }
-
-    public function delete($id){
-        $response = Http::delete($this->apiUrl.$id);
-        return $response;
-    }
-
-    public function update(array $data){
-        $response = Http::put($this->apiUrl,$data);
-        return $response->json();
+            if ($response->successful()) {
+                return;
+            } else {
+                throw match ($response->status()) {
+                    400 => new \RuntimeException('Podano nieprawidłowe ID.'),
+                    404 => new \RuntimeException('Nie znaleziono zwierzęcia.'),
+                    405 => new \RuntimeException('Błąd walidacji.'),
+                    default => new \RuntimeException('Nieoczekiwany błąd, spróbuj później.'),
+                };
+            }
+        } catch (\Exception $e) {
+            Log::error("Error during PUT request: " . $e->getMessage());
+            throw new \RuntimeException('Błąd podczas aktualizacji danych.');
+        }
     }
 
 }
